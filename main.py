@@ -1,6 +1,8 @@
 from pygame import *
 from random import randint
 from time import time as timer
+speed_x = 3
+speed_y = 3
 game = True
 finish = False
 background = (255, 255, 255)
@@ -28,13 +30,17 @@ class Player(gameSprite):
             self.rect.y -= self.speed
         if keysr[K_s] and self.rect.y != 350:
             self.rect.y += self.speed
-
+font.init()
+font1 = font.Font(None, 35)
+lose1 = font1.render("Первый проеграл ахахах.", True, (0, 0, 0))
+lose2 = font1.render("Второе проеграл хахахах.", True, (0, 0, 0))
 window = display.set_mode((700, 500))
 window.fill(background)
 ball = gameSprite('ball.png', 350, 250, 40, 40, 5)
 player1 = Player('stolb.png', 20, 200, 10, 150, 5)
 player2 = Player('stolb.png', 680, 200, 10, 150, 5)
 clock = time.Clock()
+
 while game:
     for i in event.get():
         if i.type == QUIT:
@@ -46,7 +52,20 @@ while game:
         player2.updater()
         player2.reset()
         ball.reset()
-   
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
+        if ball.rect.y > 500-40 or ball.rect.y < 0:
+            speed_y *= -1
+        if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
+            speed_x *= -1
+        if ball.rect.x < 0:
+            finish = True
+            window.blit(lose1, (200, 200))
+        if ball.rect.x > 700:
+            finish = True
+            window.blit(lose2, (200, 200))
+
 
     clock.tick(30)
     display.update()
